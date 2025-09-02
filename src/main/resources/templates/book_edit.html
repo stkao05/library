@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::#pageStyles}, ~{::section})}">
+<head>
+    <title th:text="${book.title} + ' – Edit'">Edit Book</title>
+    <th:block id="pageStyles">
+        <style>
+            .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+            label { display:block; margin: 8px 0 4px; }
+            input, select { width: 320px; max-width: 100%; padding: 6px; }
+            form { max-width: 480px; }
+        </style>
+    </th:block>
+    </head>
+<body>
+<section>
+
+<a th:href="@{|/books/${book.id}|}">← Back to details</a>
+
+<div class="grid">
+    <section>
+        <form th:action="@{|/books/${book.id}|}" method="post" th:object="${book}">
+            <label for="title">Title</label>
+            <input id="title" type="text" th:field="*{title}" required />
+
+            <label for="author">Author</label>
+            <input id="author" type="text" th:field="*{author}" required />
+
+            <label for="pubYear">Publication Year</label>
+            <input id="pubYear" type="number" th:field="*{pubYear}" />
+
+            <label for="type">Type</label>
+            <select id="type" th:field="*{type}">
+                <option th:each="t : ${types}" th:value="${t}" th:text="${t}"></option>
+            </select>
+
+            <div style="margin-top:12px;">
+                <button type="submit">Save</button>
+            </div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </form>
+    </section>
+
+    <section>
+        <h2>Add Copy</h2>
+        <form th:action="@{|/books/${book.id}/copies|}" method="post">
+            <label for="libraryId">Library</label>
+            <select id="libraryId" name="libraryId" required>
+                <option value="" disabled selected>Select a library</option>
+                <option th:each="lib : ${libraries}" th:value="${lib.id}" th:text="${lib.name}"></option>
+            </select>
+
+            <label for="shelfLocation">Shelf Location (optional)</label>
+            <input id="shelfLocation" name="shelfLocation" type="text" />
+
+            <div style="margin-top:12px;">
+                <button type="submit">Add Copy</button>
+            </div>
+            <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+        </form>
+    </section>
+</div>
+
+</section>
+</body>
+</html>

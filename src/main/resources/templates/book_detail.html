@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::#pageStyles}, ~{::section})}"
+>
+  <head>
+    <title th:text="${book.title} + ' – Details'">Book Details</title>
+    <th:block id="pageStyles">
+      <style>
+        dl {
+          display: grid;
+          grid-template-columns: max-content 1fr;
+          gap: 8px 16px;
+        }
+        dt {
+          font-weight: bold;
+        }
+        table {
+          border-collapse: collapse;
+          width: 100%;
+          margin-top: 16px;
+        }
+        th,
+        td {
+          border: 1px solid #ddd;
+          padding: 6px;
+          text-align: left;
+        }
+        th {
+          background: #f4f4f4;
+        }
+        .nowrap { white-space: nowrap; }
+      </style>
+    </th:block>
+  </head>
+  <body>
+    <section>
+      <p th:if="${isLibrarian}">
+        <a th:href="@{|/books/${book.id}/edit|}">Edit</a>
+      </p>
+
+      <section>
+        <table>
+          <tbody>
+            <tr>
+              <th class="nowrap w-16">Title</th>
+              <td class="nowrap" th:text="${book.title}">Title</td>
+            </tr>
+            <tr>
+              <th class="nowrap">Author</th>
+              <td class="nowrap" th:text="${book.author}">Author</td>
+            </tr>
+            <tr>
+              <th class="nowrap">Publication Year</th>
+              <td class="nowrap" th:text="${book.pubYear}">Year</td>
+            </tr>
+            <tr>
+              <th class="nowrap">Type</th>
+              <td class="nowrap" th:text="${book.type}">Type</td>
+            </tr>
+          </tbody>
+        </table>
+      </section>
+
+      <h2 style="margin-top: 24px">Existing Copies</h2>
+      <div th:if="${param.loanSuccess}" class="success-bar">
+        Loan created successfully.
+      </div>
+      <div th:if="${param.loanError}" class="warning-bar" th:text="${param.loanError}">Loan error</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Copy ID</th>
+            <th>Library</th>
+            <th>Shelf</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="c : ${copies}">
+            <td th:text="${c.id}"></td>
+            <td th:text="${c.library.name}"></td>
+            <td th:text="${c.shelfLocation}"></td>
+            <td>
+              <span th:if="${loanedCopyIds.contains(c.id)}">On loan</span>
+              <form
+                th:if="${!loanedCopyIds.contains(c.id)}"
+                th:action="@{|/books/${book.id}/copies/${c.id}/loan|}"
+                method="post"
+                style="display: inline"
+              >
+                <button type="submit">Loan</button>
+                <input
+                  type="hidden"
+                  th:name="${_csrf.parameterName}"
+                  th:value="${_csrf.token}"
+                />
+              </form>
+            </td>
+          </tr>
+          <tr th:if="${copies.isEmpty()}">
+            <td colspan="4">No copies yet.</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+  </body>
+</html>

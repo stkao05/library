@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{layout :: layout(~{::title}, ~{::#pageStyles}, ~{::section})}">
+<head>
+    <title>My Loans</title>
+    <th:block id="pageStyles">
+        <style>
+            h2 { margin-top: 2rem; }
+            .empty { color: #666; font-style: italic; }
+            /* Make overdue rows stand out */
+            tr.overdue td { color: #b91c1c; font-weight: 600; }
+        </style>
+    </th:block>
+    
+</head>
+<body>
+<section>
+
+<h2>Current Loans</h2>
+<div th:if="${hasOverdue}" class="warning-bar">
+    You have overdue items. Please return them as soon as possible.
+    Late returns may incur penalties.
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</div>
+<div th:if="${param.returnSuccess}" class="success-bar">
+    Book returned successfully.
+</div>
+<div th:if="${param.returnError}" class="warning-bar" th:text="${param.returnError}">Return error</div>
+<div th:if="${#lists.isEmpty(currentLoans)}" class="empty">No active loans.</div>
+<table th:if="${!#lists.isEmpty(currentLoans)}">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Type</th>
+        <th>Library</th>
+        <th>Copy</th>
+        <th>Loaned At</th>
+        <th>Due At</th>
+        <th>Action</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="loan : ${currentLoans}"
+        th:classappend="${loan.dueAt.isBefore(T(java.time.Instant).now())} ? 'overdue' : ''">
+        <td th:text="${loan.copy.book.title}"></td>
+        <td th:text="${loan.copy.book.author}"></td>
+        <td th:text="${loan.copy.book.type}"></td>
+        <td th:text="${loan.copy.library.name}"></td>
+        <td th:text="${loan.copy.shelfLocation}"></td>
+        <td th:text="${#temporals.format(loan.loanedAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${#temporals.format(loan.dueAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td>
+            <form th:action="@{|/loans/${loan.id}/return|}" method="post" style="display:inline;">
+                <button type="submit">Return</button>
+                <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}" />
+            </form>
+        </td>
+    </tr>
+    </tbody>
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+</table>
+
+<h2>Loan History</h2>
+<div th:if="${#lists.isEmpty(pastLoans)}" class="empty">No past loans.</div>
+<table th:if="${!#lists.isEmpty(pastLoans)}">
+    <thead>
+    <tr>
+        <th>Title</th>
+        <th>Author</th>
+        <th>Type</th>
+        <th>Library</th>
+        <th>Copy</th>
+        <th>Loaned At</th>
+        <th>Returned At</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="loan : ${pastLoans}">
+        <td th:text="${loan.copy.book.title}"></td>
+        <td th:text="${loan.copy.book.author}"></td>
+        <td th:text="${loan.copy.book.type}"></td>
+        <td th:text="${loan.copy.library.name}"></td>
+        <td th:text="${loan.copy.shelfLocation}"></td>
+        <td th:text="${#temporals.format(loan.loanedAt, 'yyyy-MM-dd HH:mm')}"></td>
+        <td th:text="${#temporals.format(loan.returnedAt, 'yyyy-MM-dd HH:mm')}"></td>
+    </tr>
+    </tbody>
+</table>
+
+  
+
+</section>
+</body>
+</html>

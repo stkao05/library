@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:fragment="layout(pageTitle, pageStyles, pageContent)"
+>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title th:replace="${pageTitle}">Library</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <th:block th:replace="${pageStyles}"></th:block>
+
+    <style>
+      html {
+        font-size: 13px;
+      }
+
+      body {
+        max-width: 1440px;
+        margin: 0 auto;
+      }
+
+      input {
+        border: 1px solid black;
+        padding: 0.25em 0.5em;
+      }
+
+      a {
+        color: blue;
+        text-decoration: underline;
+      }
+
+      a:visited {
+        color: blue;
+      }
+
+      button {
+        background: black;
+        color: white;
+        padding: 0.5em 1em;
+        cursor: pointer;
+      }
+
+      select {
+        background: white;
+        border: 1px solid black;
+        padding: 0.5em 1em;
+        cursor: pointer;
+      }
+
+      .field {
+        margin-bottom: 1rem;
+      }
+      .field label {
+        display: block;
+      }
+      .field input {
+        display: block;
+        width: 300px;
+      }
+
+      table {
+        border-collapse: collapse;
+        width: 100%;
+      }
+      th,
+      td {
+        border: 1px solid #ddd;
+        padding: 0.5em;
+        text-align: left;
+        font-weight: 400;
+      }
+      th {
+        background: #f4f4f4;
+      }
+
+      /* Global notification bars */
+      .warning-bar {
+        background: #fff3cd;
+        color: #664d03;
+        border: 1px solid #ffecb5;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+      }
+
+      .success-bar {
+        background: #d1e7dd;
+        color: #0f5132;
+        border: 1px solid #badbcc;
+        padding: 0.75rem 1rem;
+        border-radius: 4px;
+        margin: 1rem 0;
+      }
+    </style>
+  </head>
+  <body class="px-6">
+    <div th:replace="~{fragments/nav :: navbar}"></div>
+    <main class="pt-4">
+      <div th:replace="${pageContent}"></div>
+    </main>
+  </body>
+</html>

@@ -1,0 +1,43 @@
+<div th:fragment="navbar">
+  <nav class="border-b py-2 flex gap-4 justify-between">
+    <h1 class="font-medium">
+        <a style="color: black; text-decoration: none;" th:href="@{/books}">Line Library</a>
+    </h1>
+
+    <!-- Links visible only when user is authenticated -->
+    <th:block th:if="${isAuthenticated}">
+      <div class="flex gap-4">
+        <a th:href="@{/books}">Search Books</a>
+        <a th:if="${isLibrarian}" th:href="@{/books/new}">Add New Book</a>
+        <a th:href="@{/loans}">My Loans</a>
+        <form
+          th:action="@{/logout}"
+          method="post"
+          style="display: inline; margin: 0"
+        >
+          <input
+            type="hidden"
+            th:name="${_csrf.parameterName}"
+            th:value="${_csrf.token}"
+          />
+          <button
+            type="submit"
+            style="
+              background: none;
+              border: none;
+              padding: 0;
+              color: blue;
+              text-decoration: underline;
+              cursor: pointer;
+              font: inherit;
+            "
+          >
+            Logout
+
+          </button>
+          (<span th:if="${currentUserEmail}" th:text="${currentUserEmail}"></span>)
+        </form>
+      </div>
+    </th:block>
+  </nav>
+</div>

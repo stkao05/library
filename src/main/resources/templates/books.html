@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html
+  xmlns:th="http://www.thymeleaf.org"
+  th:replace="~{layout :: layout(~{::title}, ~{::#pageStyles}, ~{::section})}"
+>
+  <head>
+    <title>Books</title>
+    <th:block id="pageStyles">
+    </th:block>
+  </head>
+  <body>
+    <section class="">
+      <form
+        th:action="@{/books}"
+        method="get"
+        class="mb-3 flex gap-2 items-center flex-wrap"
+      >
+        <input
+          required="text"
+          name="q"
+          minlength="3"
+          placeholder="Title or author"
+          th:value="${q}"
+          class="p-1.5 min-w-[280px]"
+        />
+        <input
+          type="number"
+          min="1900"
+          max="2100" 
+          name="pubYear"
+          placeholder="Publication Year (optional)"
+          th:value="${pubYear}"
+          class="p-1.5"
+          style="width: 200px;"
+        />
+        <button type="submit">Search</button>
+        <a th:href="@{/books}" class="ml-2">Clear</a>
+        <span
+          class="ml-3 text-gray-600 text-sm"
+          th:if="${isSearch}"
+        >
+          <span>Showing results</span>
+          <span
+            th:if="${q != null and !#strings.isEmpty(q)}"
+            th:text="' q=\'' + ${q} + '\''"
+          ></span>
+          <span
+            th:if="${pubYear != null}"
+            th:text="' year=' + ${pubYear}"
+          ></span>
+        </span>
+      </form>
+
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>Year</th>
+            <th>Type</th>
+            <th th:each="lib : ${libraries}" th:text="${lib.name}"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr th:each="row : ${rows}">
+            <td>
+              <a
+                th:href="@{/books/{id}(id=${row.book.id})}"
+                th:text="${row.book.title}"
+              ></a>
+            </td>
+            <td th:text="${row.book.author}"></td>
+            <td th:text="${row.book.pubYear}"></td>
+            <td th:text="${row.book.type}"></td>
+            <td
+              th:each="lib : ${libraries}"
+              th:text="${row.availableByLibraryId[lib.id]}"
+            ></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div
+        th:if="${totalPages > 1}"
+        class="mt-4 flex gap-2 items-center flex-wrap"
+      >
+        <span>Page:</span>
+        <a
+          th:if="${currentPage > 0}"
+          th:href="@{/books(page=${currentPage - 1}, q=${q}, pubYear=${pubYear})}"
+        >
+          Prev
+        </a>
+
+        <span th:if="${showLeftEllipsis}">…</span>
+
+        <span th:each="p : ${pagesWindow}">
+          <a
+            th:if="${p != currentPage}"
+            th:href="@{/books(page=${p}, q=${q}, pubYear=${pubYear})}"
+            th:text="${p + 1}"
+            class="mx-0.5"
+          ></a>
+          <span
+            th:if="${p == currentPage}"
+            th:text="${p + 1}"
+            class="mx-0.5 font-bold"
+          ></span>
+        </span>
+
+        <span th:if="${showRightEllipsis}">…</span>
+
+        <a
+          th:if="${currentPage < totalPages - 1}"
+          th:href="@{/books(page=${currentPage + 1}, q=${q}, pubYear=${pubYear})}"
+        >
+          Next
+        </a>
+        <span class="text-gray-600 text-sm"
+          >(Total: <span th:text="${totalItems}"></span>)</span
+        >
+      </div>
+    </section>
+  </body>
+</html>
