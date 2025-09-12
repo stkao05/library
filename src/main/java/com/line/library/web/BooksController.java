@@ -67,11 +67,19 @@ public class BooksController {
                 ? PageRequest.of(safePage, size) // ordering handled in the query
                 : PageRequest.of(safePage, size, Sort.by(Sort.Direction.DESC, "id"));
 
-        Page<Book> pageResult = isSearch
-                ? (tooShortSearch
-                    ? Page.empty(pageable) // avoid hitting DB to prevent full scan
-                    : bookRepository.searchFuzzyAnyPaged(query, y, pageable))
-                : bookRepository.findAll(pageable);
+        Page<Book> pageResult;
+        long t0 = System.nanoTime();
+        if (isSearch) {
+            if (tooShortSearch) {
+                // avoid hitting DB to prevent full scan
+                pageResult = Page.empty(pageable);
+            } else {
+                pageResult = bookRepository.searchFuzzyAnyPaged(query, y, pageable);
+            }
+        } else {
+            pageResult = bookRepository.findAll(pageable);
+        }
+        long queryTimeMs = java.util.concurrent.TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - t0);
 
         List<Book> books = pageResult.getContent();
 
@@ -103,6 +111,7 @@ public class BooksController {
         model.addAttribute("pubYear", pubYear);
         model.addAttribute("isSearch", isSearch);
         model.addAttribute("searchTooShort", tooShortSearch);
+        model.addAttribute("queryTimeMs", queryTimeMs);
         
         // Pagination metadata
         int currentPage = pageResult.getNumber();

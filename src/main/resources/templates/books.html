@@ -48,6 +48,11 @@
             th:if="${pubYear != null}"
             th:text="' year=' + ${pubYear}"
           ></span>
+          <span
+            class="ml-2"
+            th:if="${!searchTooShort}"
+            th:text="'in ' + ${queryTimeMs} + ' ms'"
+          ></span>
         </span>
       </form>
 
