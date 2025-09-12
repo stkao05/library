@@ -9,33 +9,24 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 public interface BookRepository extends JpaRepository<Book, Long> {
-    @Query(value = """
-            select * from books b
-            where length(:q) >= 3
-              and (
-                      b.title  ilike ('%' || :q || '%') or b.title  % :q
-                   or b.author ilike ('%' || :q || '%') or b.author % :q
-              )
-              and (:pubYear is null or b.pub_year = :pubYear)
-            order by greatest(
-                       similarity(b.title, :q),
-                       similarity(b.author, :q)
-                   ) desc,
-                   b.id
-            """,
-            countQuery = """
-            select count(*) from books b
-            where length(:q) >= 3
-              and (
-                      b.title  ilike ('%' || :q || '%') or b.title  % :q
-                   or b.author ilike ('%' || :q || '%') or b.author % :q
-              )
-              and (:pubYear is null or b.pub_year = :pubYear)
-            """,
-            nativeQuery = true)
-    Page<Book> searchFuzzyAnyPaged(@Param("q") String q,
-                                   @Param("pubYear") Integer pubYear,
-                                   Pageable pageable);
+  @Query(value = """
+      select b.*
+      from books b
+      where length(:q) >= 3
+        and b.search_text ilike ('%' || immutable_unaccent(lower(:q)) || '%')
+        and (:pubYear is null or b.pub_year = :pubYear)
+      order by similarity(b.search_text, immutable_unaccent(lower(:q))) desc,
+                b.id
+      """, countQuery = """
+      select count(*)
+      from books b
+      where length(:q) >= 3
+        and b.search_text ilike ('%' || immutable_unaccent(lower(:q)) || '%')
+        and (:pubYear is null or b.pub_year = :pubYear)
+      """, nativeQuery = true)
+  Page<Book> searchFuzzyAnyPaged(@Param("q") String q,
+      @Param("pubYear") Integer pubYear,
+      Pageable pageable);
 
-    List<Book> findTop20ByOrderByIdDesc();
+  List<Book> findTop20ByOrderByIdDesc();
 }
