@@ -1,6 +1,7 @@
 package com.line.library.book;
 
 import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
@@ -28,5 +29,10 @@ public interface BookRepository extends JpaRepository<Book, Long> {
       @Param("pubYear") Integer pubYear,
       Pageable pageable);
 
+  // Cache all-books pagination queries for 1 hour (configured via Caffeine)
+  @Cacheable(cacheNames = "booksAll")
+  Page<Book> findAll(Pageable pageable);
+
+  // Keep method for potential other uses (not cached)
   List<Book> findTop20ByOrderByIdDesc();
 }

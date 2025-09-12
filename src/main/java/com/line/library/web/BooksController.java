@@ -7,6 +7,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.http.MediaType;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -156,6 +157,7 @@ public class BooksController {
     }
 
     @PostMapping(value = "/books", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @CacheEvict(value = "booksAll", allEntries = true)
     @PreAuthorize("hasRole('LIBRARIAN')")
     public String createBook(@ModelAttribute Book book) {
         Book saved = bookRepository.save(book);
@@ -190,6 +192,7 @@ public class BooksController {
     }
 
     @PostMapping(value = "/books/{id}", consumes = MediaType.APPLICATION_FORM_URLENCODED_VALUE)
+    @CacheEvict(value = "booksAll", allEntries = true)
     @PreAuthorize("hasRole('LIBRARIAN')")
     public String updateBook(@PathVariable Long id,
                              @ModelAttribute Book form,
